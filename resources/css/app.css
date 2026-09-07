@@ -1,0 +1,226 @@
+@import "tailwindcss";
+
+@source "../views";
+
+/* RTL Support for Arabic */
+[dir="rtl"],
+.rtl,
+html[lang="ar"] {
+    direction: rtl;
+    text-align: right;
+}
+
+[dir="rtl"] .image-upload-component .drop-zone,
+[dir="rtl"] .image-upload-component [x-ref="dropZone"] {
+    text-align: right;
+}
+
+[dir="rtl"] .image-upload-component .flex-wrap {
+    flex-direction: row-reverse;
+}
+
+[dir="rtl"] .image-upload-component .group:hover .absolute-end {
+    right: auto;
+    left: 0.25rem;
+}
+
+[dir="rtl"] .image-upload-component .space-x-2 > * + * {
+    margin-right: 0.5rem;
+    margin-left: 0;
+}
+
+[dir="rtl"] .image-upload-component .space-y-2 > * + * {
+    margin-top: 0.5rem;
+}
+
+[dir="rtl"] nav .flex {
+    flex-direction: row-reverse;
+}
+
+/* Image Upload Styles */
+.image-upload-component {
+    @apply relative;
+}
+
+.image-upload-component .drop-zone {
+    @apply transition-all duration-300 ease-in-out;
+}
+
+.image-upload-component .drop-zone.drag-over {
+    @apply border-blue-500 bg-blue-50 scale-[1.01];
+    box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.1);
+}
+
+.image-upload-component .drop-zone:focus-visible {
+    @apply outline-none ring-2 ring-blue-500 ring-offset-2;
+}
+
+.image-upload-component .file-preview {
+    @apply relative overflow-hidden rounded-lg bg-white border shadow-sm transition-all duration-200;
+}
+
+.image-upload-component .file-preview img {
+    @apply w-full h-full object-cover;
+}
+
+.image-upload-component .file-preview .preview-loading {
+    @apply animate-pulse;
+}
+
+.image-upload-component .progress-bar {
+    @apply h-1 w-full bg-gray-200 rounded-full overflow-hidden;
+}
+
+.image-upload-component .progress-bar-fill {
+    @apply h-full bg-gradient-to-r from-blue-500 to-blue-400 transition-all duration-300 ease-out;
+    border-radius: inherit;
+}
+
+.image-upload-component .progress-bar-fill.indeterminate {
+    @apply animate-pulse;
+    width: 30%;
+}
+
+.image-upload-component .remove-btn {
+    @apply absolute top-1 end-1 bg-red-500 text-white rounded-full w-6 h-6 flex items-center justify-center opacity-0 group-hover:opacity-100 focus:opacity-100 transition-all duration-200 hover:bg-red-600 shadow-md;
+}
+
+[dir="rtl"] .image-upload-component .remove-btn {
+    @apply end-auto start-1;
+}
+
+.image-upload-component .file-error {
+    @apply absolute inset-0 bg-red-100/90 flex items-center justify-center rounded-lg;
+}
+
+.image-upload-component .upload-overlay {
+    @apply absolute inset-0 bg-black/40 flex items-center justify-center rounded-lg;
+}
+
+/* Lazy Loading Styles */
+.image-upload-component img[loading="lazy"] {
+    background-color: #f3f4f6;
+    background-image: linear-gradient(90deg, #f3f4f6 25%, #e5e7eb 50%, #f3f4f6 75%);
+    background-size: 200% 100%;
+    animation: shimmer 1.5s infinite;
+}
+
+.image-upload-component img.lazy-loaded {
+    animation: fadeIn 0.3s ease-in;
+}
+
+@keyframes shimmer {
+    0% {
+        background-position: 200% 0;
+    }
+    100% {
+        background-position: -200% 0;
+    }
+}
+
+@keyframes fadeIn {
+    from {
+        opacity: 0;
+        transform: scale(0.98);
+    }
+    to {
+        opacity: 1;
+        transform: scale(1);
+    }
+}
+
+/* Upload Progress Animation */
+@keyframes uploadPulse {
+    0%, 100% {
+        opacity: 1;
+    }
+    50% {
+        opacity: 0.5;
+    }
+}
+
+.image-upload-component .upload-pulse {
+    animation: uploadPulse 1.5s ease-in-out infinite;
+}
+
+@keyframes progressGrow {
+    from {
+        width: 0%;
+    }
+    to {
+        width: var(--progress, 100%);
+    }
+}
+
+.image-upload-component .progress-grow {
+    animation: progressGrow 0.3s ease-out forwards;
+}
+
+@keyframes spin {
+    from {
+        transform: rotate(0deg);
+    }
+    to {
+        transform: rotate(360deg);
+    }
+}
+
+.image-upload-component .animate-spin {
+    animation: spin 1s linear infinite;
+}
+
+/* WebP Preview Styles */
+.image-upload-component .webp-preview-badge {
+    @apply absolute top-1 start-1 bg-blue-600 text-white text-xs px-1.5 py-0.5 rounded-full;
+    font-size: 0.625rem;
+}
+
+/* Responsive adjustments */
+@media (max-width: 640px) {
+    .image-upload-component .file-preview {
+        @apply w-24;
+    }
+}
+
+/* Dark mode support */
+@media (prefers-color-scheme: dark) {
+    .image-upload-component .file-preview {
+        @apply bg-gray-800 border-gray-700;
+    }
+
+    .image-upload-component .progress-bar {
+        @apply bg-gray-700;
+    }
+
+    .image-upload-component img[loading="lazy"] {
+        background-color: #1f2937;
+        background-image: linear-gradient(90deg, #1f2937 25%, #374151 50%, #1f2937 75%);
+        background-size: 200% 100%;
+    }
+}
+
+/* Focus styles for accessibility */
+.image-upload-component :focus-visible {
+    @apply outline-none ring-2 ring-blue-500 ring-offset-2 rounded-lg;
+}
+
+/* Spatie Media Library overrides */
+.image-upload-component .spatie-media-library img {
+    /* loading attribute set via JS, not Tailwind class */
+}
+
+/* Animation for upload completion */
+@keyframes slideUp {
+    from {
+        opacity: 0;
+        transform: translateY(10px);
+    }
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
+.image-upload-component .upload-complete {
+    animation: slideUp 0.3s ease-out forwards;
+}

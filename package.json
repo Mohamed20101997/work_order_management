@@ -1,0 +1,19 @@
+{
+    "private": true,
+    "type": "module",
+    "scripts": {
+        "build": "vite build",
+        "dev": "vite",
+        "preview": "vite preview"
+    },
+    "dependencies": {
+        "alpinejs": "^3.14.0",
+        "compressorjs": "^1.2.1"
+    },
+    "devDependencies": {
+        "@tailwindcss/vite": "^4.0.0",
+        "laravel-vite-plugin": "^1.2.0",
+        "tailwindcss": "^4.0.0",
+        "vite": "^6.0.0"
+    }
+}
