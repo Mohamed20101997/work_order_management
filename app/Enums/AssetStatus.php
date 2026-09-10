@@ -2,9 +2,10 @@
 
 namespace App\Enums;
 
+use Filament\Support\Contracts\HasLabel;
 use Illuminate\Support\Str;
 
-enum AssetStatus: string
+enum AssetStatus: string implements HasLabel
 {
     case Received = 'received';
     case AwaitingInspection = 'awaiting_inspection';
@@ -13,9 +14,9 @@ enum AssetStatus: string
     case Completed = 'completed';
     case Released = 'released';
 
-    public function label(): string
+    public function getLabel(): ?string
     {
-        return Str::headline($this->value);
+        return __(Str::headline($this->value));
     }
 
     /** @return array<int, self> */

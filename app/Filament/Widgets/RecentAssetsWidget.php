@@ -9,9 +9,11 @@ use Filament\Widgets\TableWidget;
 
 class RecentAssetsWidget extends TableWidget
 {
-    protected static ?string $heading = 'Recent Assets';
+    public function getHeading(): \Illuminate\Contracts\Support\Htmlable | string | null
+    {
+        return __('Recent Assets');
+    }
     protected static ?int $sort = 4;
-    protected static ?int $pollInterval = 30;
     protected int | string | array $columnSpan = 'full';
 
     public function table(Table $table): Table
@@ -24,26 +26,26 @@ class RecentAssetsWidget extends TableWidget
             )
             ->columns([
                 Tables\Columns\TextColumn::make('asset_number')
-                    ->label('Asset #')
+                    ->label(__('Asset #'))
                     ->searchable()
                     ->sortable()
                     ->weight('bold'),
 
                 Tables\Columns\TextColumn::make('name')
-                    ->label('Name')
+                    ->label(__('Name'))
                     ->searchable()
                     ->sortable(),
 
                 Tables\Columns\TextColumn::make('company.name')
-                    ->label('Company')
+                    ->label(__('Company'))
                     ->searchable(),
 
                 Tables\Columns\TextColumn::make('assetType.name')
-                    ->label('Type')
+                    ->label(__('Type'))
                     ->searchable(),
 
                 Tables\Columns\TextColumn::make('status')
-                    ->label('Status')
+                    ->label(__('Status'))
                     ->badge()
                     ->color(fn ($state): string => match ($state) {
                         \App\Enums\AssetStatus::Received => 'info',
@@ -54,10 +56,10 @@ class RecentAssetsWidget extends TableWidget
                         \App\Enums\AssetStatus::Released => 'gray',
                         default => 'gray',
                     })
-                    ->formatStateUsing(fn ($state): string => $state->label()),
+                    ->formatStateUsing(fn ($state): string => $state->getLabel()),
 
                 Tables\Columns\TextColumn::make('received_date')
-                    ->label('Received')
+                    ->label(__('Received'))
                     ->date()
                     ->sortable(),
             ])

@@ -5,6 +5,7 @@ namespace App\Providers;
 use App\Models\User;
 use Illuminate\Support\Facades\Gate;
 use Illuminate\Support\ServiceProvider;
+use Illuminate\Support\Carbon;
 use Illuminate\Support\Facades\App;
 
 class AppServiceProvider extends ServiceProvider
@@ -21,5 +22,6 @@ class AppServiceProvider extends ServiceProvider
         $locale = session('locale', config('app.locale', 'en'));
         App::setLocale($locale);
         App::setFallbackLocale('en');
+        Carbon::setLocale($locale);
     }
 }

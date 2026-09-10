@@ -31,6 +31,26 @@ class InspectionResource extends Resource
 
     protected static ?string $modelLabel = 'Inspection';
 
+    public static function getNavigationLabel(): string
+    {
+        return __('Inspections');
+    }
+
+    public static function getNavigationGroup(): ?string
+    {
+        return __('Operations');
+    }
+
+    public static function getPluralModelLabel(): string
+    {
+        return __('Inspections');
+    }
+
+    public static function getModelLabel(): string
+    {
+        return __('Inspection');
+    }
+
     public static function getPages(): array
     {
         return [
@@ -44,46 +64,46 @@ class InspectionResource extends Resource
     {
         return $form
             ->schema([
-                Forms\Components\Section::make('Inspection Info')
+                Forms\Components\Section::make(__('Inspection Info'))
                     ->schema([
                         Forms\Components\TextInput::make('number')
-                            ->label('Number')
+                            ->label(__('Number'))
                             ->disabled()
                             ->dehydrated(false)
                             ->maxLength(30),
                         Forms\Components\Select::make('asset_id')
-                            ->label('Asset')
+                            ->label(__('Asset'))
                             ->relationship('asset', 'name')
                             ->searchable()
                             ->preload()
                             ->required(),
                         Forms\Components\Select::make('work_order_id')
-                            ->label('Work Order')
+                            ->label(__('Work Order'))
                             ->relationship('workOrder', 'number')
                             ->searchable()
                             ->preload()
                             ->nullable(),
                         Forms\Components\Select::make('inspector_id')
-                            ->label('Inspector')
+                            ->label(__('Inspector'))
                             ->relationship('inspector', 'name')
                             ->searchable()
                             ->preload(),
                         Forms\Components\DatePicker::make('inspection_date')
-                            ->label('Inspection Date')
+                            ->label(__('Inspection Date'))
                             ->required(),
                         Forms\Components\Select::make('result')
-                            ->label('Result')
+                            ->label(__('Result'))
                             ->options(InspectionResult::class)
                             ->required(),
                         Forms\Components\TextInput::make('status')
-                            ->label('Status')
+                            ->label(__('Status'))
                             ->required(),
                     ])
                     ->columns(2),
-                Forms\Components\Section::make('Notes')
+                Forms\Components\Section::make(__('Notes'))
                     ->schema([
                         Forms\Components\Textarea::make('notes')
-                            ->label('Notes')
+                            ->label(__('Notes'))
                             ->rows(3),
                     ]),
             ]);
@@ -92,27 +112,31 @@ class InspectionResource extends Resource
     public static function table(Table $table): Table
     {
         return $table
+            ->modifyQueryUsing(fn ($query) => $query->with(['asset', 'workOrder', 'inspector']))
+            ->defaultPaginationPageOption(10)
+            ->paginated([10, 25, 50])
             ->columns([
                 TextColumn::make('number')
-                    ->label('Number')
+                    ->label(__('Number'))
                     ->searchable()
                     ->sortable(),
                 TextColumn::make('asset.name')
-                    ->label('Asset')
+                    ->label(__('Asset'))
                     ->searchable()
                     ->sortable(),
                 TextColumn::make('work_order.number')
-                    ->label('Work Order')
+                    ->label(__('Work Order'))
                     ->searchable(),
                 TextColumn::make('inspector.name')
-                    ->label('Inspector')
+                    ->label(__('Inspector'))
                     ->searchable(),
                 TextColumn::make('inspection_date')
-                    ->label('Inspection Date')
+                    ->label(__('Inspection Date'))
                     ->date()
                     ->sortable(),
                 BadgeColumn::make('result')
-                    ->label('Result')
+                    ->label(__('Result'))
+                    ->formatStateUsing(fn ($state): string => $state->getLabel())
                     ->color(fn (InspectionResult $state): string => match ($state->value) {
                         InspectionResult::Passed => 'success',
                         InspectionResult::Failed => 'danger',
@@ -121,7 +145,7 @@ class InspectionResource extends Resource
                         default => 'gray',
                     }),
                 BadgeColumn::make('status')
-                    ->label('Status')
+                    ->label(__('Status'))
                     ->formatStateUsing(fn (string $state): string => strtoupper(str_replace('_', ' ', $state)))
                     ->color(fn (string $state): string => match ($state) {
                         'pending' => 'warning',
@@ -133,15 +157,15 @@ class InspectionResource extends Resource
             ])
             ->filters([
                 SelectFilter::make('result')
-                    ->label('Result')
+                    ->label(__('Result'))
                     ->options(InspectionResult::class),
                 SelectFilter::make('asset_id')
-                    ->label('Asset')
+                    ->label(__('Asset'))
                     ->relationship('asset', 'name')
                     ->searchable()
                     ->preload(),
                 SelectFilter::make('status')
-                    ->label('Status'),
+                    ->label(__('Status')),
             ])
             ->actions([
                 EditAction::make(),

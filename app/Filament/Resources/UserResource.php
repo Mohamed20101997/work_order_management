@@ -27,6 +27,26 @@ class UserResource extends Resource
 
     protected static ?string $modelLabel = 'User';
 
+    public static function getNavigationLabel(): string
+    {
+        return __('Users');
+    }
+
+    public static function getNavigationGroup(): ?string
+    {
+        return __('Settings');
+    }
+
+    public static function getPluralModelLabel(): string
+    {
+        return __('Users');
+    }
+
+    public static function getModelLabel(): string
+    {
+        return __('User');
+    }
+
     public static function getPages(): array
     {
         return [
@@ -40,39 +60,48 @@ class UserResource extends Resource
     {
         return $form
             ->schema([
-                Forms\Components\Section::make('User Info')
+                Forms\Components\Section::make(__('User Info'))
                     ->schema([
                         Forms\Components\TextInput::make('name')
-                            ->label('Name')
+                            ->label(__('Name'))
                             ->required()
                             ->maxLength(255),
                         Forms\Components\TextInput::make('email')
-                            ->label('Email')
+                            ->label(__('Email'))
                             ->email()
                             ->required()
                             ->maxLength(255),
                         Forms\Components\TextInput::make('password')
-                            ->label('Password')
+                            ->label(__('Password'))
                             ->password()
-                            ->required()
+                            ->revealable()
+                            ->required(fn (string $operation): bool => $operation === 'create')
+                            ->minLength(8)
                             ->maxLength(255)
-                            ->dehydrated(fn (string $state): bool => strlen($state) > 0)
-                            ->default('password'),
+                            ->placeholder(__('Leave blank to keep current password'))
+                            ->default(fn (?string $operation): string => $operation === 'create' ? 'password' : '')
+                            ->afterStateHydrated(static function (Forms\Components\TextInput $component, $state): void {
+                                if (filled($state)) {
+                                    $component->state('');
+                                }
+                            })
+                            ->dehydrated(fn (?string $state): bool => filled($state))
+                            ->statePath('password'),
                         Forms\Components\Select::make('role')
-                            ->label('Role')
+                            ->label(__('Role'))
                             ->options([
-                                'admin' => 'Admin',
-                                'manager' => 'Manager',
-                                'technician' => 'Technician',
-                                'viewer' => 'Viewer',
+                                'admin' => __('Admin'),
+                                'manager' => __('Manager'),
+                                'technician' => __('Technician'),
+                                'viewer' => __('Viewer'),
                             ])
                             ->required(),
                     ])
                     ->columns(2),
-                Forms\Components\Section::make('Status')
+                Forms\Components\Section::make(__('Status'))
                     ->schema([
                         Forms\Components\Toggle::make('is_active')
-                            ->label('Active'),
+                            ->label(__('Active')),
                     ]),
             ]);
     }
@@ -82,14 +111,14 @@ class UserResource extends Resource
         return $table
             ->columns([
                 TextColumn::make('name')
-                    ->label('Name')
+                    ->label(__('Name'))
                     ->searchable()
                     ->sortable(),
                 TextColumn::make('email')
-                    ->label('Email')
+                    ->label(__('Email'))
                     ->searchable(),
                 TextColumn::make('role')
-                    ->label('Role')
+                    ->label(__('Role'))
                     ->badge()
                     ->formatStateUsing(fn (string $state): string => strtoupper($state))
                     ->color(fn (string $state): string => match ($state) {
@@ -100,11 +129,11 @@ class UserResource extends Resource
                         default => 'gray',
                     }),
                 ToggleColumn::make('is_active')
-                    ->label('Active'),
+                    ->label(__('Active')),
             ])
             ->filters([
                 SelectFilter::make('role')
-                    ->label('Role')
+                    ->label(__('Role'))
                     ->options([
                         'admin' => 'Admin',
                         'manager' => 'Manager',
@@ -112,7 +141,7 @@ class UserResource extends Resource
                         'viewer' => 'Viewer',
                     ]),
                 SelectFilter::make('is_active')
-                    ->label('Active')
+                    ->label(__('Active'))
                     ->options([
                         '1' => 'Yes',
                         '0' => 'No',

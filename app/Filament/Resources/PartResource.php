@@ -27,6 +27,26 @@ class PartResource extends Resource
 
     protected static ?string $modelLabel = 'Part';
 
+    public static function getNavigationLabel(): string
+    {
+        return __('Parts');
+    }
+
+    public static function getNavigationGroup(): ?string
+    {
+        return __('Operations');
+    }
+
+    public static function getPluralModelLabel(): string
+    {
+        return __('Parts');
+    }
+
+    public static function getModelLabel(): string
+    {
+        return __('Part');
+    }
+
     public static function getPages(): array
     {
         return [
@@ -40,29 +60,29 @@ class PartResource extends Resource
     {
         return $form
             ->schema([
-                Forms\Components\Section::make('Part Info')
+                Forms\Components\Section::make(__('Part Info'))
                     ->schema([
                         Forms\Components\TextInput::make('part_number')
-                            ->label('Part Number')
+                            ->label(__('Part Number'))
                             ->required()
                             ->maxLength(50),
                         Forms\Components\TextInput::make('name')
-                            ->label('Name')
+                            ->label(__('Name'))
                             ->required()
                             ->maxLength(255),
                         Forms\Components\Textarea::make('description')
-                            ->label('Description')
+                            ->label(__('Description'))
                             ->rows(3),
                         Forms\Components\TextInput::make('quantity')
-                            ->label('Quantity')
+                            ->label(__('Quantity'))
                             ->numeric()
                             ->required(),
                         Forms\Components\TextInput::make('minimum_quantity')
-                            ->label('Minimum Quantity')
+                            ->label(__('Minimum Quantity'))
                             ->numeric()
                             ->required(),
                         Forms\Components\TextInput::make('unit')
-                            ->label('Unit')
+                            ->label(__('Unit'))
                             ->maxLength(20),
                     ])
                     ->columns(2),
@@ -74,32 +94,32 @@ class PartResource extends Resource
         return $table
             ->columns([
                 TextColumn::make('part_number')
-                    ->label('Part Number')
+                    ->label(__('Part Number'))
                     ->searchable()
                     ->sortable(),
                 TextColumn::make('name')
-                    ->label('Name')
+                    ->label(__('Name'))
                     ->searchable()
                     ->sortable(),
                 TextColumn::make('description')
-                    ->label('Description')
+                    ->label(__('Description'))
                     ->limit(50),
                 TextColumn::make('quantity')
-                    ->label('Quantity')
+                    ->label(__('Quantity'))
                     ->numeric()
                     ->sortable(),
                 TextColumn::make('minimum_quantity')
-                    ->label('Minimum Quantity')
+                    ->label(__('Minimum Quantity'))
                     ->numeric()
                     ->sortable(),
                 TextColumn::make('unit')
-                    ->label('Unit'),
+                    ->label(__('Unit')),
                 ToggleColumn::make('is_active')
-                    ->label('Active'),
+                    ->label(__('Active')),
             ])
             ->filters([
                 SelectFilter::make('is_active')
-                    ->label('Active')
+                    ->label(__('Active'))
                     ->options([
                         '1' => 'Yes',
                         '0' => 'No',

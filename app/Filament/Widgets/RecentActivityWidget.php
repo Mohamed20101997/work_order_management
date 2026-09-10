@@ -9,9 +9,11 @@ use Filament\Widgets\TableWidget;
 
 class RecentActivityWidget extends TableWidget
 {
-    protected static ?string $heading = 'Recent Activity';
+    public function getHeading(): \Illuminate\Contracts\Support\Htmlable | string | null
+    {
+        return __('Recent Activity');
+    }
     protected static ?int $sort = 5;
-    protected static ?int $pollInterval = 30;
     protected int | string | array $columnSpan = 'full';
 
     public function table(Table $table): Table
@@ -24,16 +26,16 @@ class RecentActivityWidget extends TableWidget
             )
             ->columns([
                 Tables\Columns\TextColumn::make('description')
-                    ->label('Activity')
+                    ->label(__('Activity'))
                     ->searchable()
                     ->limit(80),
 
                 Tables\Columns\TextColumn::make('user.name')
-                    ->label('User')
+                    ->label(__('User'))
                     ->searchable(),
 
                 Tables\Columns\TextColumn::make('created_at')
-                    ->label('Time')
+                    ->label(__('Time'))
                     ->dateTime()
                     ->sortable()
                     ->description(fn (Activity $record): string => $record->created_at->diffForHumans()),

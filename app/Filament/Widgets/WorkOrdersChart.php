@@ -4,22 +4,29 @@ namespace App\Filament\Widgets;
 
 use App\Models\WorkOrder;
 use Filament\Widgets\ChartWidget;
+use Illuminate\Support\Facades\Cache;
 
 class WorkOrdersChart extends ChartWidget
 {
-    protected static ?string $heading = 'Work Orders by Status';
+    public function getHeading(): \Illuminate\Contracts\Support\Htmlable | string | null
+    {
+        return __('Work Orders by Status');
+    }
     protected static ?int $sort = 3;
-    protected static ?int $pollInterval = 30;
 
     protected function getData(): array
     {
-        $statusCounts = WorkOrder::query()
-            ->selectRaw('status, COUNT(*) as count')
-            ->groupBy('status')
-            ->pluck('count', 'status')
-            ->toArray();
+        $statusCounts = Cache::remember(
+            'dashboard:work-order-status-counts',
+            now()->addMinute(),
+            fn (): array => WorkOrder::query()
+                ->selectRaw('status, COUNT(*) as count')
+                ->groupBy('status')
+                ->pluck('count', 'status')
+                ->toArray(),
+        );
 
-        $labels = ['Open', 'In Progress', 'Awaiting Testing', 'Completed'];
+        $labels = array_map('__', ['Open', 'In Progress', 'Awaiting Testing', 'Completed']);
         $data = [
             $statusCounts['open'] ?? 0,
             $statusCounts['in_progress'] ?? 0,

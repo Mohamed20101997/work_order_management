@@ -27,6 +27,26 @@ class CompanyResource extends Resource
 
     protected static ?string $modelLabel = 'Company';
 
+    public static function getNavigationLabel(): string
+    {
+        return __('Companies');
+    }
+
+    public static function getNavigationGroup(): ?string
+    {
+        return __('Settings');
+    }
+
+    public static function getPluralModelLabel(): string
+    {
+        return __('Companies');
+    }
+
+    public static function getModelLabel(): string
+    {
+        return __('Company');
+    }
+
     public static function getPages(): array
     {
         return [
@@ -40,33 +60,33 @@ class CompanyResource extends Resource
     {
         return $form
             ->schema([
-                Forms\Components\Section::make('Company Info')
+                Forms\Components\Section::make(__('Company Info'))
                     ->schema([
                         Forms\Components\TextInput::make('name')
-                            ->label('Name')
+                            ->label(__('Name'))
                             ->required()
                             ->maxLength(255),
                         Forms\Components\TextInput::make('contact_person')
-                            ->label('Contact Person')
+                            ->label(__('Contact Person'))
                             ->maxLength(255),
                         Forms\Components\TextInput::make('phone')
-                            ->label('Phone')
+                            ->label(__('Phone'))
                             ->maxLength(50),
                         Forms\Components\TextInput::make('email')
-                            ->label('Email')
+                            ->label(__('Email'))
                             ->email(),
                         Forms\Components\TextInput::make('address')
-                            ->label('Address')
+                            ->label(__('Address'))
                             ->maxLength(255),
                     ])
                     ->columns(2),
-                Forms\Components\Section::make('Notes')
+                Forms\Components\Section::make(__('Notes'))
                     ->schema([
                         Forms\Components\Textarea::make('notes')
-                            ->label('Notes')
+                            ->label(__('Notes'))
                             ->rows(3),
                         Forms\Components\Toggle::make('is_active')
-                            ->label('Active'),
+                            ->label(__('Active')),
                     ]),
             ]);
     }
@@ -76,26 +96,26 @@ class CompanyResource extends Resource
         return $table
             ->columns([
                 TextColumn::make('name')
-                    ->label('Name')
+                    ->label(__('Name'))
                     ->searchable()
                     ->sortable(),
                 TextColumn::make('contact_person')
-                    ->label('Contact Person')
+                    ->label(__('Contact Person'))
                     ->searchable(),
                 TextColumn::make('phone')
-                    ->label('Phone'),
+                    ->label(__('Phone')),
                 TextColumn::make('email')
-                    ->label('Email'),
+                    ->label(__('Email')),
                 TextColumn::make('assets_count')
-                    ->label('Asset Count')
+                    ->label(__('Asset Count'))
                     ->counts('assets')
                     ->numeric(),
                 ToggleColumn::make('is_active')
-                    ->label('Active'),
+                    ->label(__('Active')),
             ])
             ->filters([
                 SelectFilter::make('is_active')
-                    ->label('Active')
+                    ->label(__('Active'))
                     ->options([
                         '1' => 'Yes',
                         '0' => 'No',

@@ -5,12 +5,15 @@ namespace App\Filament\Widgets;
 use App\Models\Asset;
 use Filament\Widgets\ChartWidget;
 use Illuminate\Support\Carbon;
+use Illuminate\Support\Facades\Cache;
 
 class AssetsReceivedChart extends ChartWidget
 {
-    protected static ?string $heading = 'Assets Received (Last 12 Months)';
+    public function getHeading(): \Illuminate\Contracts\Support\Htmlable | string | null
+    {
+        return __('Assets Received (Last 12 Months)');
+    }
     protected static ?int $sort = 3;
-    protected static ?int $pollInterval = 60;
     protected int | string | array $columnSpan = 'full';
 
     protected function getData(): array
@@ -20,13 +23,17 @@ class AssetsReceivedChart extends ChartWidget
             $months->push(Carbon::now()->subMonths($i));
         }
 
-        $labels = $months->map(fn ($m) => $m->format('M Y'))->toArray();
+        $labels = $months->map(fn ($m) => $m->translatedFormat('M Y'))->toArray();
 
-        $counts = $months->map(function ($m) {
-            return Asset::whereYear('received_date', $m->year)
+        $counts = Cache::remember(
+            'dashboard:assets-received-12m',
+            now()->addMinutes(5),
+            fn (): array => $months->map(fn ($m) => Asset::query()
+                ->whereYear('received_date', $m->year)
                 ->whereMonth('received_date', $m->month)
-                ->count();
-        })->toArray();
+                ->count()
+            )->values()->toArray(),
+        );
 
         return [
             'datasets' => [

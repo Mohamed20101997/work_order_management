@@ -2,17 +2,18 @@
 
 namespace App\Enums;
 
+use Filament\Support\Contracts\HasLabel;
 use Illuminate\Support\Str;
 
-enum InspectionResult: string
+enum InspectionResult: string implements HasLabel
 {
     case Passed = 'passed';
     case Failed = 'failed';
     case RequiresRepair = 'requires_repair';
     case RequiresFurtherTesting = 'requires_further_testing';
 
-    public function label(): string
+    public function getLabel(): ?string
     {
-        return Str::headline($this->value);
+        return __(Str::headline($this->value));
     }
 }

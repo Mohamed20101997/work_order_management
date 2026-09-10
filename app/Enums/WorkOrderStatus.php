@@ -2,18 +2,19 @@
 
 namespace App\Enums;
 
+use Filament\Support\Contracts\HasLabel;
 use Illuminate\Support\Str;
 
-enum WorkOrderStatus: string
+enum WorkOrderStatus: string implements HasLabel
 {
     case Open = 'open';
     case InProgress = 'in_progress';
     case AwaitingTesting = 'awaiting_testing';
     case Completed = 'completed';
 
-    public function label(): string
+    public function getLabel(): ?string
     {
-        return Str::headline($this->value);
+        return __(Str::headline($this->value));
     }
 
     /** @return array<int, self> */

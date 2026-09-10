@@ -5,20 +5,27 @@ namespace App\Filament\Widgets;
 use App\Enums\AssetStatus;
 use App\Models\Asset;
 use Filament\Widgets\ChartWidget;
+use Illuminate\Support\Facades\Cache;
 
 class AssetsByStatusChart extends ChartWidget
 {
-    protected static ?string $heading = 'Assets by Status';
+    public function getHeading(): \Illuminate\Contracts\Support\Htmlable | string | null
+    {
+        return __('Assets by Status');
+    }
     protected static ?int $sort = 2;
-    protected static ?int $pollInterval = 30;
 
     protected function getData(): array
     {
-        $statusCounts = Asset::query()
-            ->selectRaw('status, COUNT(*) as count')
-            ->groupBy('status')
-            ->pluck('count', 'status')
-            ->toArray();
+        $statusCounts = Cache::remember(
+            'dashboard:asset-status-counts',
+            now()->addMinute(),
+            fn (): array => Asset::query()
+                ->selectRaw('status, COUNT(*) as count')
+                ->groupBy('status')
+                ->pluck('count', 'status')
+                ->toArray(),
+        );
 
         $labels = [];
         $data = [];
@@ -35,7 +42,7 @@ class AssetsByStatusChart extends ChartWidget
 
         foreach ($statusConfig as $key => $config) {
             if (($statusCounts[$key] ?? 0) > 0) {
-                $labels[] = $config['label'];
+                $labels[] = __($config['label']);
                 $data[] = $statusCounts[$key];
                 $colors[] = $config['color'];
             }

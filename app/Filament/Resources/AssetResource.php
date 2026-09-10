@@ -30,6 +30,26 @@ class AssetResource extends Resource
 
     protected static ?string $modelLabel = 'Asset';
 
+    public static function getNavigationLabel(): string
+    {
+        return __('Assets');
+    }
+
+    public static function getNavigationGroup(): ?string
+    {
+        return __('Assets');
+    }
+
+    public static function getPluralModelLabel(): string
+    {
+        return __('Assets');
+    }
+
+    public static function getModelLabel(): string
+    {
+        return __('Asset');
+    }
+
     public static function getPages(): array
     {
         return [
@@ -44,71 +64,89 @@ class AssetResource extends Resource
     {
         return $form
             ->schema([
-                Forms\Components\Section::make('Asset Info')
+                Forms\Components\Section::make(__('Asset Info'))
                     ->schema([
                         Forms\Components\Select::make('asset_type_id')
-                            ->label('Asset Type')
+                            ->label(__('Asset Type'))
                             ->relationship('assetType', 'name')
                             ->searchable()
                             ->preload()
+                            ->createOptionForm([
+                                Forms\Components\TextInput::make('name')
+                                    ->label(__('Name'))
+                                    ->required()
+                                    ->maxLength(255),
+                                Forms\Components\TextInput::make('code')
+                                    ->label(__('Code'))
+                                    ->maxLength(50),
+                            ])
                             ->required(),
                         Forms\Components\Select::make('company_id')
-                            ->label('Company')
+                            ->label(__('Company'))
                             ->relationship('company', 'name')
                             ->searchable()
                             ->preload()
+                            ->createOptionForm([
+                                Forms\Components\TextInput::make('name')
+                                    ->label(__('Name'))
+                                    ->required()
+                                    ->maxLength(255),
+                            ])
                             ->required(),
                         Forms\Components\TextInput::make('name')
-                            ->label('Name')
+                            ->label(__('Name'))
                             ->required()
                             ->maxLength(255),
                         Forms\Components\TextInput::make('asset_number')
-                            ->label('Asset Number')
+                            ->label(__('Asset Number'))
                             ->disabled()
                             ->dehydrated(false)
                             ->maxLength(30),
                         Forms\Components\TextInput::make('serial_number')
-                            ->label('Serial Number')
+                            ->label(__('Serial Number'))
                             ->maxLength(255),
                         Forms\Components\TextInput::make('manufacturer')
-                            ->label('Manufacturer')
+                            ->label(__('Manufacturer'))
                             ->maxLength(255),
                         Forms\Components\TextInput::make('model')
-                            ->label('Model')
+                            ->label(__('Model'))
                             ->maxLength(255),
                         Forms\Components\TextInput::make('location')
-                            ->label('Location')
+                            ->label(__('Location'))
                             ->maxLength(255),
                         Forms\Components\DatePicker::make('received_date')
-                            ->label('Received Date')
+                            ->label(__('Received Date'))
                             ->required(),
                         Forms\Components\DatePicker::make('expected_release_date')
-                            ->label('Expected Release Date'),
+                            ->label(__('Expected Release Date')),
                         Forms\Components\Select::make('priority')
-                            ->label('Priority')
+                            ->label(__('Priority'))
                             ->options(Priority::class)
                             ->required(),
                     ])
                     ->columns(2),
-                Forms\Components\Section::make('Description')
+                Forms\Components\Section::make(__('Description'))
                     ->schema([
                         Forms\Components\Textarea::make('description')
-                            ->label('Description')
+                            ->label(__('Description'))
                             ->rows(3),
                         Forms\Components\Textarea::make('notes')
-                            ->label('Notes')
+                            ->label(__('Notes'))
                             ->rows(3),
                         SpatieMediaLibraryFileUpload::make('attachments')
-                            ->label('Attachments')
+                            ->label(__('Attachments'))
                             ->collection('attachments')
                             ->multiple()
-                            ->preserveFilenames()
-                            ->disk('public'),
+                            ->image()
+                            ->imageEditor()
+                            ->maxSize(8192)
+                            ->acceptedFileTypes(['image/jpeg', 'image/png', 'image/webp', 'image/gif'])
+                            ->directory('asset-attachments'),
                     ]),
-                Forms\Components\Section::make('Status')
+                Forms\Components\Section::make(__('Status'))
                     ->schema([
                         Forms\Components\Select::make('status')
-                            ->label('Status')
+                            ->label(__('Status'))
                             ->options(AssetStatus::class)
                             ->required(),
                     ]),
@@ -118,26 +156,29 @@ class AssetResource extends Resource
     public static function table(Table $table): Table
     {
         return $table
+            ->modifyQueryUsing(fn ($query) => $query->with(['company', 'assetType']))
+            ->defaultPaginationPageOption(10)
+            ->paginated([10, 25, 50])
             ->columns([
                 TextColumn::make('asset_number')
-                    ->label('Asset Number')
+                    ->label(__('Asset Number'))
                     ->searchable()
                     ->sortable(),
                 TextColumn::make('name')
-                    ->label('Name')
+                    ->label(__('Name'))
                     ->searchable()
                     ->sortable(),
                 TextColumn::make('company.name')
-                    ->label('Company')
+                    ->label(__('Company'))
                     ->searchable()
                     ->sortable(),
                 TextColumn::make('assetType.name')
-                    ->label('Asset Type')
+                    ->label(__('Asset Type'))
                     ->searchable()
                     ->sortable(),
                 BadgeColumn::make('status')
-                    ->label('Status')
-                    ->formatStateUsing(fn ($state): string => strtoupper(str_replace('_', ' ', $state->value)))
+                    ->label(__('Status'))
+                    ->formatStateUsing(fn ($state): string => $state->getLabel())
                     ->color(fn ($state): string => match ($state) {
                         AssetStatus::Received => 'info',
                         AssetStatus::AwaitingInspection => 'warning',
@@ -148,8 +189,8 @@ class AssetResource extends Resource
                         default => 'gray',
                     }),
                 BadgeColumn::make('priority')
-                    ->label('Priority')
-                    ->formatStateUsing(fn ($state): string => strtoupper($state->value))
+                    ->label(__('Priority'))
+                    ->formatStateUsing(fn ($state): string => $state->getLabel())
                     ->color(fn ($state): string => match ($state) {
                         Priority::Low => 'success',
                         Priority::Normal => 'info',
@@ -158,21 +199,21 @@ class AssetResource extends Resource
                         default => 'gray',
                     }),
                 TextColumn::make('received_date')
-                    ->label('Received Date')
+                    ->label(__('Received Date'))
                     ->date()
                     ->sortable(),
             ])
             ->filters([
                 SelectFilter::make('status')
-                    ->label('Status')
+                    ->label(__('Status'))
                     ->options(AssetStatus::class),
                 SelectFilter::make('company_id')
-                    ->label('Company')
+                    ->label(__('Company'))
                     ->relationship('company', 'name')
                     ->searchable()
                     ->preload(),
                 SelectFilter::make('asset_type_id')
-                    ->label('Asset Type')
+                    ->label(__('Asset Type'))
                     ->relationship('assetType', 'name')
                     ->searchable()
                     ->preload(),

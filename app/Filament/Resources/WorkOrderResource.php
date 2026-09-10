@@ -31,6 +31,26 @@ class WorkOrderResource extends Resource
 
     protected static ?string $modelLabel = 'Work Order';
 
+    public static function getNavigationLabel(): string
+    {
+        return __('Work Orders');
+    }
+
+    public static function getNavigationGroup(): ?string
+    {
+        return __('Operations');
+    }
+
+    public static function getPluralModelLabel(): string
+    {
+        return __('Work Orders');
+    }
+
+    public static function getModelLabel(): string
+    {
+        return __('Work Order');
+    }
+
     public static function getPages(): array
     {
         return [
@@ -44,54 +64,54 @@ class WorkOrderResource extends Resource
     {
         return $form
             ->schema([
-                Forms\Components\Section::make('Work Order Info')
+                Forms\Components\Section::make(__('Work Order Info'))
                     ->schema([
                         Forms\Components\TextInput::make('number')
-                            ->label('Number')
+                            ->label(__('Number'))
                             ->disabled()
                             ->dehydrated(false)
                             ->maxLength(30),
                         Forms\Components\Select::make('asset_id')
-                            ->label('Asset')
+                            ->label(__('Asset'))
                             ->relationship('asset', 'name')
                             ->searchable()
                             ->preload()
                             ->required(),
                         Forms\Components\Textarea::make('reported_problem')
-                            ->label('Reported Problem')
+                            ->label(__('Reported Problem'))
                             ->rows(3)
                             ->required(),
                         Forms\Components\Textarea::make('diagnosis')
-                            ->label('Diagnosis')
+                            ->label(__('Diagnosis'))
                             ->rows(3),
                         Forms\Components\Textarea::make('work_performed')
-                            ->label('Work Performed')
+                            ->label(__('Work Performed'))
                             ->rows(3),
                         Forms\Components\Select::make('status')
-                            ->label('Status')
+                            ->label(__('Status'))
                             ->options(WorkOrderStatus::class)
                             ->required(),
                         Forms\Components\Select::make('priority')
-                            ->label('Priority')
+                            ->label(__('Priority'))
                             ->options(Priority::class)
                             ->required(),
                         Forms\Components\Select::make('assigned_to')
-                            ->label('Assignee')
+                            ->label(__('Assignee'))
                             ->relationship('assignee', 'name')
                             ->searchable()
                             ->preload(),
                         Forms\Components\DatePicker::make('due_date')
-                            ->label('Due Date'),
+                            ->label(__('Due Date')),
                         Forms\Components\DateTimePicker::make('started_at')
-                            ->label('Started At'),
+                            ->label(__('Started At')),
                         Forms\Components\DateTimePicker::make('completed_at')
-                            ->label('Completed At'),
+                            ->label(__('Completed At')),
                     ])
                     ->columns(2),
-                Forms\Components\Section::make('Notes')
+                Forms\Components\Section::make(__('Notes'))
                     ->schema([
                         Forms\Components\Textarea::make('notes')
-                            ->label('Notes')
+                            ->label(__('Notes'))
                             ->rows(3),
                     ]),
             ]);
@@ -100,22 +120,25 @@ class WorkOrderResource extends Resource
     public static function table(Table $table): Table
     {
         return $table
+            ->modifyQueryUsing(fn ($query) => $query->with(['asset', 'assignee']))
+            ->defaultPaginationPageOption(10)
+            ->paginated([10, 25, 50])
             ->columns([
                 TextColumn::make('number')
-                    ->label('Number')
+                    ->label(__('Number'))
                     ->searchable()
                     ->sortable(),
                 TextColumn::make('asset.name')
-                    ->label('Asset')
+                    ->label(__('Asset'))
                     ->searchable()
                     ->sortable(),
                 TextColumn::make('reported_problem')
-                    ->label('Reported Problem')
+                    ->label(__('Reported Problem'))
                     ->limit(50)
                     ->description(fn (WorkOrder $record): string => $record->reported_problem),
                 BadgeColumn::make('status')
-                    ->label('Status')
-                    ->formatStateUsing(fn ($state): string => strtoupper(str_replace('_', ' ', $state->value)))
+                    ->label(__('Status'))
+                    ->formatStateUsing(fn ($state): string => $state->getLabel())
                     ->color(fn ($state): string => match ($state) {
                         WorkOrderStatus::Open => 'warning',
                         WorkOrderStatus::InProgress => 'info',
@@ -124,8 +147,8 @@ class WorkOrderResource extends Resource
                         default => 'gray',
                     }),
                 BadgeColumn::make('priority')
-                    ->label('Priority')
-                    ->formatStateUsing(fn ($state): string => strtoupper($state->value))
+                    ->label(__('Priority'))
+                    ->formatStateUsing(fn ($state): string => $state->getLabel())
                     ->color(fn ($state): string => match ($state) {
                         Priority::Low => 'success',
                         Priority::Normal => 'info',
@@ -134,22 +157,22 @@ class WorkOrderResource extends Resource
                         default => 'gray',
                     }),
                 TextColumn::make('assignee.name')
-                    ->label('Assignee')
+                    ->label(__('Assignee'))
                     ->searchable(),
                 TextColumn::make('due_date')
-                    ->label('Due Date')
+                    ->label(__('Due Date'))
                     ->date()
                     ->sortable(),
             ])
             ->filters([
                 SelectFilter::make('status')
-                    ->label('Status')
+                    ->label(__('Status'))
                     ->options(WorkOrderStatus::class),
                 SelectFilter::make('priority')
-                    ->label('Priority')
+                    ->label(__('Priority'))
                     ->options(Priority::class),
                 SelectFilter::make('asset_id')
-                    ->label('Asset')
+                    ->label(__('Asset'))
                     ->relationship('asset', 'name')
                     ->searchable()
                     ->preload(),

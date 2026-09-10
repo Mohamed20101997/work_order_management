@@ -2,20 +2,24 @@
 
 namespace App\Http\Controllers;
 
+use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
-use Illuminate\Routing\Redirector;
-use Illuminate\Support\Facades\Redirect;
 
 class LocaleController extends Controller
 {
-    public function switch(Request $request)
+    public function switch(Request $request): RedirectResponse
     {
-        $locale = $request->validate([
-            'locale' => 'required|in:en,ar',
-        ])['locale'];
+        $locale = $request->route('locale');
+
+        abort_unless(
+            in_array($locale, config('app.available_locales', ['en', 'ar']), true),
+            404,
+        );
 
         $request->session()->put('locale', $locale);
 
-        return Redirect::back();
+        $request->user()?->update(['locale' => $locale]);
+
+        return redirect()->back();
     }
 }

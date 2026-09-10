@@ -5,25 +5,24 @@ namespace App\Http\Middleware;
 use Closure;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\App;
-use Illuminate\Support\Facades\Config;
 use Symfony\Component\HttpFoundation\Response;
 
 class LocalizationMiddleware
 {
     public function handle(Request $request, Closure $next): Response
     {
-        $locale = $request->session()->get('locale')
-            ?? $request->header('Accept-Language')
-            ?? Config::get('app.locale', 'en');
+        $available = config('app.available_locales', ['en', 'ar']);
 
-        $locale = in_array($locale, Config::get('app.available_locales', ['en', 'ar']))
-            ? $locale
-            : 'en';
+        $locale = $request->session()->get('locale')
+            ?? $request->user()?->locale
+            ?? str_replace('-', '_', (string) ($request->getPreferredLanguage($available) ?: config('app.locale', 'en')));
+
+        if (! in_array($locale, $available, true)) {
+            $locale = config('app.locale', 'en');
+        }
 
         App::setLocale($locale);
-
-        $direction = Config::get('app.locale_direction.' . $locale, 'ltr');
-        Config::set('app.locale_direction', $direction);
+        \Illuminate\Support\Carbon::setLocale($locale);
 
         return $next($request);
     }

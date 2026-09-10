@@ -1,0 +1,204 @@
+/* ===== Asset Management — Filament design enhancements ===== */
+
+/* Smooth page transitions & typography polish */
+:root {
+    --fi-body-background-color: #f6f7fb;
+    --ams-gradient: linear-gradient(135deg, #2563eb 0%, #4f46e5 55%, #7c3aed 100%);
+}
+
+.dark {
+    --fi-body-background-color: #0b1120;
+}
+
+body {
+    font-feature-settings: "cv02", "cv03", "cv04", "cv11";
+    background: var(--fi-body-background-color);
+    transition: background-color 150ms ease;
+}
+
+/* Sidebar — subtle gradient + depth */
+.fi-sidebar,
+.fi-sidebar-nav {
+    background: linear-gradient(180deg, #ffffff 0%, #f8fafc 100%) !important;
+    border-inline-end: 1px solid rgb(226 232 240 / 0.9);
+    box-shadow: 4px 0 24px -12px rgb(15 23 42 / 0.08);
+}
+
+.dark .fi-sidebar,
+.dark .fi-sidebar-nav {
+    background: linear-gradient(180deg, #101828 0%, #0b1120 100%) !important;
+    border-inline-end: 1px solid rgb(255 255 255 / 0.06);
+    box-shadow: 4px 0 24px -12px rgb(0 0 0 / 0.5);
+}
+
+/* Active navigation item gets a gradient pill */
+.fi-side-nav-item > .fi-side-nav-item-link.fi-active {
+    background-image: var(--ams-gradient) !important;
+    border-color: transparent !important;
+    box-shadow: 0 6px 18px -6px rgb(37 99 235 / 0.5);
+}
+
+/* Topbar — glass effect */
+.fi-topbar {
+    backdrop-filter: blur(14px);
+    background: rgb(255 255 255 / 0.75) !important;
+    border-bottom: 1px solid rgb(226 232 240 / 0.8) !important;
+}
+
+.dark .fi-topbar {
+    background: rgb(11 17 32 / 0.7) !important;
+    border-bottom: 1px solid rgb(255 255 255 / 0.06) !important;
+}
+
+/* Cards / sections — softer shadows, rounded corners, hover lift on widgets */
+.fi-section,
+.fi-wi-widget {
+    border-radius: 1rem !important;
+    box-shadow: 0 1px 2px rgb(15 23 42 / 0.04), 0 12px 28px -18px rgb(15 23 42 / 0.18) !important;
+    border: 1px solid rgb(226 232 240 / 0.7) !important;
+}
+
+.dark .fi-section,
+.dark .fi-wi-widget {
+    border-color: rgb(255 255 255 / 0.06) !important;
+    box-shadow: 0 1px 2px rgb(0 0 0 / 0.3), 0 16px 32px -20px rgb(0 0 0 / 0.6) !important;
+}
+
+.fi-wi-widget {
+    transition: transform 180ms ease, box-shadow 180ms ease;
+}
+
+.fi-wi-widget:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 2px 4px rgb(15 23 42 / 0.05), 0 20px 40px -20px rgb(15 23 42 / 0.25) !important;
+}
+
+/* Stats cards — gradient accent strip */
+.fi-so-stat {
+    position: relative;
+    overflow: hidden;
+}
+
+.fi-so-stat::before {
+    content: "";
+    position: absolute;
+    inset-inline-start: 0;
+    top: 0;
+    bottom: 0;
+    width: 4px;
+    background: var(--ams-gradient);
+    border-end-start-radius: 1rem;
+    border-start-start-radius: 1rem;
+}
+
+/* Tables */
+table {
+    font-size: 0.8125rem;
+}
+
+tbody tr {
+    transition: background-color 120ms ease;
+}
+
+tbody tr:hover {
+    background-color: rgb(37 99 235 / 0.04);
+}
+
+.dark tbody tr:hover {
+    background-color: rgb(255 255 255 / 0.03);
+}
+
+th {
+    text-transform: uppercase;
+    letter-spacing: 0.04em;
+    font-size: 0.6875rem !important;
+}
+
+/* Buttons — gradient primary */
+.fi-btn-color-primary,
+.fi-modal.fi-btn-color-primary {
+    background-image: var(--ams-gradient) !important;
+    border: none !important;
+    box-shadow: 0 8px 20px -10px rgb(79 70 229 / 0.55);
+}
+
+.fi-btn-color-primary:hover {
+    filter: brightness(1.08);
+    box-shadow: 0 10px 24px -8px rgb(79 70 229 / 0.65);
+}
+
+/* Inputs */
+.fi-input-wrp {
+    border-radius: 0.75rem !important;
+    transition: box-shadow 150ms ease;
+}
+
+.fi-input-wrp:focus-within {
+    box-shadow: 0 0 0 3px rgb(59 130 246 / 0.25) !important;
+}
+
+/* Badges */
+.fi-badge {
+    border-radius: 9999px !important;
+    font-weight: 600;
+    letter-spacing: 0.02em;
+    text-transform: none;
+}
+
+/* Login / auth pages */
+.fi-simple-main {
+    border-radius: 1.25rem !important;
+    box-shadow: 0 24px 64px -24px rgb(15 23 42 / 0.35) !important;
+}
+
+body.fi-simple ::selection {
+    background: #3b82f6;
+    color: #fff;
+}
+
+/* FileUpload previews — smoother */
+.filepond--item-panel {
+    border-radius: 0.75rem !important;
+}
+
+.filepond--image-preview-overlay-idle,
+.filepond--image-preview-overlay-success {
+    border-radius: 0.75rem !important;
+}
+
+/* Scrollbars */
+::-webkit-scrollbar {
+    width: 10px;
+    height: 10px;
+}
+
+::-webkit-scrollbar-thumb {
+    background: rgb(100 116 139 / 0.35);
+    border-radius: 999px;
+    border: 2px solid transparent;
+    background-clip: content-box;
+}
+
+::-webkit-scrollbar-thumb:hover {
+    background: rgb(100 116 139 / 0.55);
+    background-clip: content-box;
+}
+
+/* Dark mode tables/inputs contrast */
+.dark .fi-ta,
+.dark .fi-section {
+    background-color: #101828;
+}
+
+/* RTL correctness (handled by logical props above; extra safety) */
+[dir="rtl"] .fi-so-stat::before {
+    border-radius: 0 1rem 1rem 0;
+}
+
+/* Reduced motion respect */
+@media (prefers-reduced-motion: reduce) {
+    *, *::before, *::after {
+        transition: none !important;
+        animation: none !important;
+    }
+}

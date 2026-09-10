@@ -2,17 +2,18 @@
 
 namespace App\Enums;
 
+use Filament\Support\Contracts\HasLabel;
 use Illuminate\Support\Str;
 
-enum Priority: string
+enum Priority: string implements HasLabel
 {
     case Low = 'low';
     case Normal = 'normal';
     case High = 'high';
     case Urgent = 'urgent';
 
-    public function label(): string
+    public function getLabel(): ?string
     {
-        return Str::headline($this->value);
+        return __(Str::headline($this->value));
     }
 }
